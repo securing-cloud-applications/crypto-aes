@@ -18,7 +18,7 @@ public class PaymentsApplication implements CommandLineRunner {
   @Value("${refunds.password}")
   private String password;
 
-  @Value("${refunds.salt")
+  @Value("${refunds.salt}")
   private String salt;
 
   @Override

@@ -15,7 +15,7 @@ Demo project showing how to use AES in GCM mode with 256-bit key to guarantee in
 ## run on the command line
 
 * run warehouse app `java -jar warehouse/target/warehouse-0.0.1-SNAPSHOT.jar` to generate the 
-  `data/refunds.aen` file
+  `data/refunds.aes` file
 * run payments app `java -jar payments/target/payments-0.0.1-SNAPSHOT.jar` to read the 
   `data/refunds.aes` and verify and decrypt it.
 * edit `data/refunds.aes` to simulate corruption. you can add a newline at the end of the file.
