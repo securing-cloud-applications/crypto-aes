@@ -17,11 +17,8 @@ public class WarehouseApplication implements CommandLineRunner {
   @Value("${refundsPath:data/refunds.aes}")
   private String refundsPath;
 
-  @Value("${refunds.password}")
-  private String password;
-
-  @Value("${refunds.salt}")
-  private String salt;
+  @Value("${refunds.key}")
+  private String key;
 
   @Override
   public void run(String... args) throws Exception {
@@ -30,7 +27,7 @@ public class WarehouseApplication implements CommandLineRunner {
             new Refund("5555555555554444", BigDecimal.valueOf(500)),
             new Refund("4012888888881881", BigDecimal.valueOf(250)));
 
-    refundGenerationService.generateReport(Path.of(refundsPath), refunds, password, salt);
+    refundGenerationService.generateReport(Path.of(refundsPath), refunds, key);
   }
 
   public static void main(String[] args) {

@@ -9,10 +9,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class PaymentService {
 
-  public void processRefunds(Path refundsFile, String key, String salt) {
+  public void processRefunds(Path refundsFile, String key) {
 
     try {
-      byte[] clearText = CryptoUtils.decryptAes256Gcm(Files.readAllBytes(refundsFile), key, salt);
+      byte[] clearText =
+          CryptoUtils.decryptAes256Gcm(Files.readAllBytes(refundsFile), key.getBytes());
       String refundsJson = new String(clearText);
       System.out.println("Issuing Refund to");
       System.out.println(refundsJson);
