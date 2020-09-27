@@ -1,37 +1,40 @@
 # crypto-aes
 
-Demo project showing how to use HMAC functions with SHA256 to guarantee data integrity 
-and authenticate who generates a file. There are two sub projects in this repo.
+Demo project showing how to use AES in GCM mode with 256-bit key to guarantee integrity,
+ authenticity, and confidentiality between two applications. There are three subprojects in this repo.
 
-* warehouse - which generates a `refunds.json` file into the `data` folder 
-* payments - which reads the `data/refunds.json` and verifies its integrity and authenticity using
- HMAC-SHA-256
+* utils - contains shared utility classes `CrptoUtils` and `JsonUtils`.  
+* warehouse - generates `data/refunds.aes` file encrypted with AES/GCM, depends on the utils project. 
+* payments -  reads and decrypts `data/refunds.aes`, depends on utils project.
 
 ## software prerequisites 
 
 * Java 11 JDK 
 * Java IDE 
 
-## setup
+## run on the command line
 
-Apache Maven is the build system in use. You should import the project into your favourite IDE so
-you can more easily explore the code.
+* run warehouse app `java -jar warehouse/target/warehouse-0.0.1-SNAPSHOT.jar` to generate the 
+  `data/refunds.aen` file
+* run payments app `java -jar payments/target/payments-0.0.1-SNAPSHOT.jar` to read the 
+  `data/refunds.aes` and verify and decrypt it.
+* edit `data/refunds.aes` to simulate corruption. you can add a newline at the end of the file.
+* run payments app `java -jar payments/target/payments-0.0.1-SNAPSHOT.jar` you will an exception. 
 
-## run 
+## run from the IDE 
 
-Run the applications in the following order.
-
-* run `com.example.warehouse.WarehouseApplicationTests` to generate the `data/refunds.json` and `data/refunds.json.hs256`
-* run 'com.example.payments.PaymentsApplicationTests' to read the `data/refunds.json` and verify its integrity 
-* edit `data/refunds.json` to simulate corruption. you can add a newline at the end of the file.
-* run `com.example.payments.PaymentsApplicationTests` to get a data corruption exception 
-* `data/refunds.json` to it's original state
-* edit the refunds password in `src/main/resources/application.yml` 
-* run `com.example.payments.PaymentsApplicationTests` to get a data corruption exception
+* run `com.example.warehouse.WarehouseApplication` to generate the `data/refunds.aes`
+* run `com.example.payments.PaymentsApplication` to read the `data/refunds.aes`  verify and decrypt 
+* edit `data/refunds.aes` to simulate corruption. you can add a newline at the end of the file.
+* run `com.example.payments.PaymentsApplication` to get a data corruption exception 
+* restore `data/refunds.aes` to its original state
+* edit the refunds password in `payments/src/main/resources/application.yml`
+* run `com.example.payments.PaymentsApplication` to get a data corruption exception 
 
 ## interesting files to look at 
 
+* `util/src/main/java/com/example/util/CryptoUtils.java` to examine AES encryption
 * `warehouse/src/main/java/com/example/warehouse/RefundGenerationService.java` to examine the code
-that generates the `refund.json` and `refund.json.sha256` file
+that generates the `refund.aes` file
 * `payments/src/main/java/com/example/payments/PaymentService.java` to examine the code that 
- verifies the integrity of the `refund.json` file before consuming it.
+ verifies and decrypts the `refund.aes` file before consuming it.

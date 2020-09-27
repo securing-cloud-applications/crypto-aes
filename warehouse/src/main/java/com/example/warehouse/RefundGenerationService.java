@@ -11,23 +11,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class RefundGenerationService {
 
-  public void generateReport(Path refundsFile, List<Refund> refunds, String key) {
+  public void generateReport(Path refundsFile, List<Refund> refunds, String key, String salt) {
     try {
-      this.generateRefundFile(refundsFile, refunds);
-      this.generateSha256HmacFile(refundsFile, key);
+      String refundsJson = JsonUtils.toJson(refunds);
+      byte[] cipherText = CryptoUtils.encryptAes256Gcm(refundsJson.getBytes(), key, salt);
+      Files.write(refundsFile, cipherText);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  private void generateRefundFile(Path refundsFile, List<Refund> refunds) throws IOException {
-    String refundsJson = JsonUtils.toJson(refunds);
-    Files.writeString(refundsFile, refundsJson);
-  }
-
-  private void generateSha256HmacFile(Path refundsFile, String key) throws IOException {
-    Path hashFile = refundsFile.resolveSibling(refundsFile.getFileName() + ".hs256");
-    String hashValue = CryptoUtils.hmacSha256(Files.readAllBytes(refundsFile), key);
-    Files.writeString(hashFile, hashValue);
   }
 }
