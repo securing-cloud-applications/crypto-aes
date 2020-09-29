@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PaymentService {
-
   public void processRefunds(Path refundsFile, String key) {
-
     try {
       byte[] clearText =
           CryptoUtils.decryptAes256Gcm(Files.readAllBytes(refundsFile), key.getBytes());
