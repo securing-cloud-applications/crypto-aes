@@ -9,6 +9,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import org.springframework.security.crypto.util.EncodingUtils;
 
@@ -53,6 +54,48 @@ public class CryptoUtils {
       var gcmParameterSpec = new GCMParameterSpec(128, iv);
       var aesKey = new SecretKeySpec(key, "AES");
       aes.init(Cipher.DECRYPT_MODE, aesKey, gcmParameterSpec);
+
+      return aes.doFinal(cipherText);
+    } catch (NoSuchAlgorithmException
+        | NoSuchPaddingException
+        | InvalidKeyException
+        | InvalidAlgorithmParameterException
+        | IllegalBlockSizeException
+        | BadPaddingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static byte[] encryptAes256Cbc(byte[] clearText, byte[] key) {
+    try {
+      Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding");
+      var initializationVector = new IvParameterSpec(randomBytes(16));
+      var aesKey = new SecretKeySpec(key, "AES");
+      aes.init(Cipher.ENCRYPT_MODE, aesKey, initializationVector);
+
+      byte[] cipherText = aes.doFinal(clearText);
+
+      return EncodingUtils.concatenate(initializationVector.getIV(), cipherText);
+    } catch (NoSuchAlgorithmException
+        | NoSuchPaddingException
+        | InvalidKeyException
+        | InvalidAlgorithmParameterException
+        | IllegalBlockSizeException
+        | BadPaddingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  public static byte[] decryptAes256Cbc(byte[] input, byte[] key) {
+    try {
+      Cipher aes = Cipher.getInstance("AES/CBC/PKCS5Padding");
+
+      byte[] iv = EncodingUtils.subArray(input, 0, 16);
+      byte[] cipherText = EncodingUtils.subArray(input, 16, input.length);
+
+      var initializationVector = new IvParameterSpec(iv);
+      var aesKey = new SecretKeySpec(key, "AES");
+      aes.init(Cipher.DECRYPT_MODE, aesKey, initializationVector);
 
       return aes.doFinal(cipherText);
     } catch (NoSuchAlgorithmException
